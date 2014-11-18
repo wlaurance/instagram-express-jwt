@@ -40,7 +40,7 @@ app.use(passport.initialize());
 app.get('/', passport.authenticate('instagram'), function(){});
 
 function success(req, res) {
-  res.redirect(REDIRECT_URL + "/cookie-set/" + encodeURIComponent(res.user));
+  res.redirect(REDIRECT_URL + "/cookie-set/" + encodeURIComponent(req.user));
 }
 
 app.get('/oauth_redirect', passport.authenticate('instagram'), success);
