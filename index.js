@@ -18,8 +18,6 @@ var INSTAGRAM_CLIENT_SECRET = env.IG_SECRET;
 var INSTAGRAM_CLIENT_ID = env.IG_ID;
 var REDIRECT_URL = env.REDIRECT_URL;
 var SECRET = env.SECRET;
-var COOKIENAME = env.COOKIENAME;
-var COOKIE_DOMAIN = env.COOKIE_DOMAIN;
 
 passport.use(new InstagramStrategy({
     clientID: INSTAGRAM_CLIENT_ID,
@@ -42,12 +40,7 @@ app.use(passport.initialize());
 app.get('/', passport.authenticate('instagram'), function(){});
 
 function success(req, res) {
-  if (COOKIE_DOMAIN) {
-    res.cookie(COOKIENAME, req.user, {domain: COOKIE_DOMAIN, secure: true});
-  } else {
-    res.cookie(COOKIENAME, req.user);
-  }
-  res.redirect(REDIRECT_URL);
+  res.redirect(REDIRECT_URL + "/cookie-set/" + encodeURIComponent(res.user));
 }
 
 app.get('/oauth_redirect', passport.authenticate('instagram'), success);
