@@ -38,4 +38,6 @@ function success(req, res) {
 
 app.get('/oauth_redirect', passport.authenticate('instagram'), success);
 
-app.listen(process.env.PORT || 3000);
+app.listen(env.PORT || 3000, function(){
+  console.log('Listening now on %s', env.PORT);
+});
