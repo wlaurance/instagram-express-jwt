@@ -22,11 +22,13 @@ passport.use(new InstagramStrategy({
     callbackURL: host + "/oauth_redirect"
   },
   function igCallback(accessToken, refreshToken, profile, done) {
-
+    console.log(arguments);
+    done(null, profile);
   }
 ));
 
 var app = express();
+app.use(passport.initialize());
 
 app.get('/', passport.authenticate('instagram'), function(){});
 
