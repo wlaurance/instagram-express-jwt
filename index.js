@@ -1,6 +1,8 @@
 var express = require('express')
 var passport = require('passport')
 var InstagramStrategy = require('passport-instagram').Strategy
+var jwt = require('jwt-simple');
+var _ = require('underscore');
 
 passport.serializeUser(function(user, done) {
   done(null, user);
@@ -15,6 +17,9 @@ var host = env.HOST;
 var INSTAGRAM_CLIENT_SECRET = env.IG_SECRET;
 var INSTAGRAM_CLIENT_ID = env.IG_ID;
 var REDIRECT_URL = env.REDIRECT_URL;
+var SECRET = env.SECRET;
+var COOKIENAME = env.COOKIENAME;
+var COOKIE_DOMAIN = env.COOKIE_DOMAIN;
 
 passport.use(new InstagramStrategy({
     clientID: INSTAGRAM_CLIENT_ID,
@@ -22,8 +27,12 @@ passport.use(new InstagramStrategy({
     callbackURL: host + "/oauth_redirect"
   },
   function igCallback(accessToken, refreshToken, profile, done) {
-    console.log(arguments);
-    done(null, profile);
+    var payload = {
+      accessToken: accessToken,
+      profile: _.pick(profile, 'provider', 'id', 'username', 'displayName')
+    };
+    var token = jwt.encode(payload, SECRET);
+    done(null, token);
   }
 ));
 
@@ -33,6 +42,11 @@ app.use(passport.initialize());
 app.get('/', passport.authenticate('instagram'), function(){});
 
 function success(req, res) {
+  if (COOKIE_DOMAIN) {
+    res.cookie(COOKIENAME, req.user, {domain: COOKIE_DOMAIN, secure: true});
+  } else {
+    res.cookie(COOKIENAME, req.user);
+  }
   res.redirect(REDIRECT_URL);
 }
 
