@@ -1,8 +1,9 @@
 var express = require('express')
 var passport = require('passport')
 var InstagramStrategy = require('passport-instagram').Strategy
-var jwt = require('jwt-simple');
+var jwt = require('jsonwebtoken');
 var _ = require('underscore');
+var fs = require('fs');
 
 passport.serializeUser(function(user, done) {
   done(null, user);
@@ -17,7 +18,7 @@ var host = env.HOST;
 var INSTAGRAM_CLIENT_SECRET = env.IG_SECRET;
 var INSTAGRAM_CLIENT_ID = env.IG_ID;
 var REDIRECT_URL = env.REDIRECT_URL;
-var SECRET = env.SECRET;
+var cert = fs.readFileSync(env.PRIVATE_KEY);
 
 passport.use(new InstagramStrategy({
     clientID: INSTAGRAM_CLIENT_ID,
@@ -29,7 +30,7 @@ passport.use(new InstagramStrategy({
       accessToken: accessToken,
       profile: _.pick(profile, 'provider', 'id', 'username', 'displayName')
     };
-    var token = jwt.encode(payload, SECRET);
+    var token = jwt.sign(payload, cert, {algorithm: 'RS256'});
     done(null, token);
   }
 ));
