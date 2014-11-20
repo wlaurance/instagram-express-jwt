@@ -1,6 +1,6 @@
 {
   "name": "instagram-express-jwt",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "outputs instagram jwts",
   "main": "index.js",
   "scripts": {
